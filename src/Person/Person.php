@@ -1,5 +1,4 @@
 <?php
-
 namespace GeekBrains\LevelTwo\Person;
 
 use \DateTimeImmutable;

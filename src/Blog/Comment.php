@@ -2,96 +2,83 @@
 
 namespace GeekBrains\LevelTwo\Blog;
 
-use GeekBrains\LevelTwo\Blog\Post;
-
 class Comment
 {
-  private int $id;
-  private int $authorId;
-  private int $postId;
-  private string $title;
-  private string $text;
+
+    public function __construct(
+        private UUID $uuid,
+        private User $user,
+        private Post $post,
+        private string $text
+    ) {}
+
+    public function __toString()
+    {
+        return $this->user . ' пишет Comment ' . $this->text;
+    }
 
 
-  /**
-   * @param int $id
-   * @param int $authorId
-   * @param int $postId
-   * @param string $title
-   * @param string $text
-   */
-  public function __construct(
-    int $id,
-    int $authorId,
-    int $postId,
-    string $title,
-    string $text
-  ) {
-    $this->id = $id;
-    $this->authorId = $authorId;
-    $this->postId = $postId;
-    $this->title = $title;
-    $this->text = $text;
-  }
+    /**
+     * @return UUID
+     */
+    public function uuid(): UUID
+    {
+        return $this->uuid;
+    }
 
+    /**
+     * @param UUID $uuid
+     */
+    public function setId(UUID $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
 
-  public function __toString()
-  {
-    return $this->authorId . ' пишет: ' . $this->title . '>>>' . $this->text . PHP_EOL;
-  }
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
 
-  public function getId(): int
-  {
-    return $this->id;
-  }
+    /**
+     * @return Post
+     */
+    public function getPost(): Post
+    {
+        return $this->post;
+    }
 
-  public function setId($id): void
-  {
-    $this->id = $id;
-  }
+    /**
+     * @param Post $post
+     */
+    public function setPost(Post $post): void
+    {
+        $this->post = $post;
+    }
 
+    /**
+     * @return string
+     */
+    public function getText(): string
+    {
+        return $this->text;
+    }
 
-  public function getAuthorId(): int
-  {
-    return $this->authorId;
-  }
-
-  public function setAuthorId($authorId): void
-  {
-    $this->authorId = $authorId;
-  }
-
-
-  public function getText(): string
-  {
-    return $this->text;
-  }
-
-  public function setText($text): void
-  {
-    $this->text = $text;
-  }
-
-
-  public function getPostId(): string
-  {
-    return $this->postId;
-  }
-
-  public function setPostId($postId): void
-  {
-    $this->postId = $postId;
-  }
-
-
-  public function getTitle(): string
-  {
-    return $this->title;
-  }
-
-  public function setTitle($title): void
-  {
-    $this->title = $title;
-  }
+    /**
+     * @param string $text
+     */
+    public function setText(string $text): void
+    {
+        $this->text = $text;
+    }
 }

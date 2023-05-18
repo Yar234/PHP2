@@ -6,70 +6,65 @@ use GeekBrains\LevelTwo\Person\Name;
 
 class User
 {
-  private int $id;
-  private Name $username;
-  private string $login;
+    private UUID $uuid;
+    private Name $name;
+    private string $username;
 
-  /**
-   * @param int $id
-   * @param Name $username
-   * @param string $login
-   */
-  public function __construct(
-    int $id,
-    Name $username,
-    string $login
-  ) {
-    $this->id = $id;
-    $this->username = $username;
-    $this->login = $login;
-  }
+    /**
+     * @param UUID $uuid
+     * @param Name $name
+     * @param string $login
+     */
+    public function __construct(UUID $uuid, Name $name, string $login)
+    {
+        $this->uuid = $uuid;
+        $this->name = $name;
+        $this->username = $login;
+    }
 
-  public function __toString(): string
-  {
-    return "Юзер $this->id с именем $this->username и логином $this->login." . PHP_EOL;
-  }
+    public function __toString(): string
+    {
+        return "Юзер $this->uuid с именем $this->name и логином $this->username." . PHP_EOL;
+    }
 
 
-  public function getId(): int
-  {
-    return $this->id;
-  }
+    /**
+     * @return UUID
+     */
+    public function uuid(): UUID
+    {
+        return $this->uuid;
+    }
 
-  /**
-   * @param int $id
-   */
-  public function setId(int $id): void
-  {
-    $this->id = $id;
-  }
+    /**
+     * @return Name
+     */
+    public function name(): Name
+    {
+        return $this->name;
+    }
 
+    /**
+     * @param Name $name
+     */
+    public function setName(Name $name): void
+    {
+        $this->name = $name;
+    }
 
-  public function getUsername(): string
-  {
-    return $this->username;
-  }
+    /**
+     * @return string
+     */
+    public function username(): string
+    {
+        return $this->username;
+    }
 
-  /**
-   * @param Name $username
-   */
-  public function setUsername(string $username): void
-  {
-    $this->username = $username;
-  }
-
-
-  public function getLogin(): string
-  {
-    return $this->login;
-  }
-
-
-  /**
-   * @param string $login
-   */
-  public function setLogin(string $login): void
-  {
-    $this->login = $login;
-  }
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
+    }
 }
