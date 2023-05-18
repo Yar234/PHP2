@@ -4,15 +4,28 @@ namespace GeekBrains\LevelTwo\Blog;
 
 class Post
 {
-    private UUID $uuid;
-    private User $user;
-    private string $title;
-    private string $text;
+    /**
+     * @param UUID $uuid
+     * @param User $user
+     * @param string $title
+     * @param string $text
+     */
+    public function __construct(
+        private UUID $uuid,
+        private User $user,
+        private string $title,
+        private string $text
+    ) {}
+
+    public function __toString()
+    {
+        return $this->user . ' пишет: ' . $this->text . PHP_EOL;
+    }
 
     /**
      * @return UUID
      */
-    public function getUuid(): UUID
+    public function uuid(): UUID
     {
         return $this->uuid;
     }
@@ -39,47 +52,6 @@ class Post
     public function setTitle(string $title): void
     {
         $this->title = $title;
-    }
-
-    /**
-     * @param UUID $uuid
-     * @param User $user
-     * @param string $title
-     * @param string $text
-     */
-    public function __construct(
-        UUID $uuid,
-        User $user,
-        string $title,
-        string $text
-    )
-    {
-        $this->uuid = $uuid;
-        $this->user = $user;
-        $this->title = $title;
-        $this->text = $text;
-    }
-
-    public function __toString()
-    {
-        return $this->user . ' пишет: ' . $this->text . PHP_EOL;
-    }
-
-
-    /**
-     * @return UUID
-     */
-    public function uuid(): UUID
-    {
-        return $this->uuid;
-    }
-
-    /**
-     * @param UUID $uuid
-     */
-    public function setId(int $uuid): void
-    {
-        $this->uuid = $uuid;
     }
 
     /**
@@ -110,9 +82,11 @@ class Post
 
     /**
      * @param string $text
+     * @return $this
      */
-    public function setText(string $text): string
+    public function setText(string $text): Post
     {
         $this->text = $text;
+        return $this;
     }
 }
