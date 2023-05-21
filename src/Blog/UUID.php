@@ -3,12 +3,14 @@
 namespace GeekBrains\LevelTwo\Blog;
 
 use GeekBrains\LevelTwo\Blog\Exceptions\InvalidArgumentException;
+
 class UUID
 {
     /**
      * @throws InvalidArgumentException
      */
-    public function __construct(private string $uuidString) {
+    public function __construct(private string $uuidString)
+    {
         if (!uuid_is_valid($this->uuidString)) {
             throw new InvalidArgumentException(
                 "Malformed UUID: $this->uuidString"
