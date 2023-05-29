@@ -15,9 +15,10 @@ class CreateUserCommand
 {
     public function __construct(
         private UsersRepositoryInterface $usersRepository
-    ) {}
+    ) {
+    }
 
-    /**(
+    /**
      * @throws CommandException
      * @throws InvalidArgumentException|ArgumentsException
      */
@@ -33,7 +34,8 @@ class CreateUserCommand
             UUID::random(),
             new Name(
                 $arguments->get('first_name'),
-                $arguments->get('last_name')),
+                $arguments->get('last_name')
+            ),
             $username,
         ));
     }

@@ -1,32 +1,21 @@
 <?php
 
-use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\SqliteUsersRepository;
+use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\CreateUser;
+use GeekBrains\LevelTwo\Http\Actions\Posts\CreatePost;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\FindByUsername;
 use GeekBrains\LevelTwo\HTTP\ErrorResponse;
 use GeekBrains\LevelTwo\HTTP\Request;
+use GeekBrains\LevelTwo\Http\Actions\Posts\DeletePost;
 use GeekBrains\LevelTwo\Blog\Exceptions\HttpException;
 
-require_once __DIR__ . '/vendor/autoload.php';
+$container = require __DIR__ . '/bootstrap.php';
 
-$request = new Request($_GET, $_SERVER, file_get_contents('php://input'),);
-
-$routes = [
-    'GET' => [
-        '/users/show' => new FindByUsername(
-            new SqliteUsersRepository(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-        ),
-    ],
-    'POST' => [
-        '/users/create' => new CreateUser(
-            new SqliteUsersRepository(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-        ),
-    ],
-];
+$request = new Request(
+    $_GET,
+    $_SERVER,
+    file_get_contents('php://input'),
+);
 
 try {
     $path = $request->path();
@@ -42,21 +31,38 @@ try {
     return;
 }
 
+
+$routes = [
+    'GET' => [
+        '/users/show' => FindByUsername::class,
+    ],
+    'POST' => [
+        '/users/create' => CreateUser::class,
+        '/posts/create' => CreatePost::class,
+    ],
+    'DELETE' => [
+        '/posts' => DeletePost::class,
+    ],
+
+];
+
 if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
 if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
-$action = $routes[$method][$path];
+$actionClassName = $routes[$method][$path];
+
+$action = $container->get($actionClassName);
 
 try {
     $response = $action->handle($request);
-    $response->send();
-} catch (Exception $e) {
+} catch (AppException $e) {
     (new ErrorResponse($e->getMessage()))->send();
 }
+$response->send();

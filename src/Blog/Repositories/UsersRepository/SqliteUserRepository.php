@@ -4,6 +4,7 @@ namespace GeekBrains\LevelTwo\Blog\Repositories\UsersRepository;
 
 use GeekBrains\LevelTwo\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
+use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Blog\UUID;
 use GeekBrains\LevelTwo\Person\Name;
@@ -14,15 +15,27 @@ class SqliteUserRepository implements UsersRepositoryInterface
 {
     private PDO $connection;
 
-    public function __construct(PDO $connection) {
+    public function __construct(PDO $connection)
+    {
         $this->connection = $connection;
     }
 
     public function save(User $user): void
     {
         $statement = $this->connection->prepare(
-            'INSERT INTO users (first_name, last_name, uuid, username)
-VALUES (:first_name, :last_name, :uuid, :username)'
+            'INSERT INTO users (
+                first_name,
+                last_name,
+                uuid,
+                username)
+            VALUES (
+                :first_name,
+                :last_name,
+                :uuid,
+                :username)
+                ON CONFLICT (uuid) DO UPDATE SET
+                first_name = :first_name,
+                last_name = :last_name'
         );
 
         $statement->execute([
@@ -44,13 +57,7 @@ VALUES (:first_name, :last_name, :uuid, :username)'
         );
 
         $statement->execute([(string)$uuid]);
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if ($result === false) {
-            throw new UserNotFoundException(
-                "Cannot get user: $uuid"
-            );
-        }
         return $this->getUser($statement, $uuid);
     }
 
