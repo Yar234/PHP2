@@ -2,8 +2,8 @@
 
 namespace GeekBrains\LevelTwo\HTTP\Actions;
 
-use GeekBrains\LevelTwo\HTTP\Request;
-use GeekBrains\LevelTwo\HTTP\Response;
+use GeekBrains\LevelTwo\http\Request;
+use GeekBrains\LevelTwo\http\Response;
 
 interface ActionInterface
 {
