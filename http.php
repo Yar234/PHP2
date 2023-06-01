@@ -2,6 +2,7 @@
 
 use GeekBrains\LevelTwo\HTTP\Likes\CreatePostLike;
 use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
+use GeekBrains\LevelTwo\HTTP\Actions\Auth\LogIn;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\CreateUser;
 use GeekBrains\LevelTwo\Http\Actions\Posts\CreatePost;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\FindByUsername;
@@ -23,7 +24,7 @@ $request = new Request(
 
 try {
     $path = $request->path();
-} catch (HttpException) {
+} catch (HttpException $e) {
     $logger->warning($e->getMessage());
     (new ErrorResponse)->send();
     return;
@@ -31,7 +32,7 @@ try {
 
 try {
     $method = $request->method();
-} catch (HttpException) {
+} catch (HttpException $e) {
     $logger->warning($e->getMessage());
     (new ErrorResponse)->send();
     return;
@@ -43,6 +44,7 @@ $routes = [
         '/users/show' => FindByUsername::class,
     ],
     'POST' => [
+        '/login' => LogIn::class,
         '/users/create' => CreateUser::class,
         '/posts/create' => CreatePost::class,
         '/post-likes/create' => CreatePostLike::class
@@ -70,6 +72,9 @@ $action = $container->get($actionClassName);
 try {
     $response = $action->handle($request);
 } catch (AppException $e) {
+    $logger->error($e->getMessage(), ['exception' => $e]);
     (new ErrorResponse($e->getMessage()))->send();
+    return;
 }
+
 $response->send();

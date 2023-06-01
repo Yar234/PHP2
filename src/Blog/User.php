@@ -6,20 +6,18 @@ use GeekBrains\LevelTwo\Person\Name;
 
 class User
 {
-    private UUID $uuid;
-    private Name $name;
-    private string $username;
-
     /**
      * @param UUID $uuid
      * @param Name $name
-     * @param string $login
+     * @param string $username
+     * @param string $hashedPassword
      */
-    public function __construct(UUID $uuid, Name $name, string $login)
-    {
-        $this->uuid = $uuid;
-        $this->name = $name;
-        $this->username = $login;
+    public function __construct(
+        private UUID $uuid,
+        private Name $name,
+        private string $username,
+        private string $hashedPassword
+    ) {
     }
 
     public function __toString(): string
@@ -27,6 +25,37 @@ class User
         return "Юзер $this->uuid с именем $this->name и логином $this->username." . PHP_EOL;
     }
 
+    /**
+     * @throws Exceptions\InvalidArgumentException
+     */
+    public static function createFrom(
+        string $username,
+        string $password,
+        Name   $name
+    ): self {
+        $uuid = UUID::random();
+        return new self(
+            $uuid,
+            $name,
+            $username,
+            self::hash($password, $uuid),
+        );
+    }
+
+    public function hashedPassword(): string
+    {
+        return $this->hashedPassword;
+    }
+
+    private static function hash(string $password, UUID $uuid): string
+    {
+        return hash('sha256', $uuid . $password);
+    }
+
+    public function checkPassword(string $password): bool
+    {
+        return $this->hashedPassword === self::hash($password, $this->uuid);
+    }
 
     /**
      * @return UUID

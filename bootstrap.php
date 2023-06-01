@@ -1,26 +1,33 @@
 <?php
 
 use GeekBrains\LevelTwo\Blog\Container\DIContainer;
+use GeekBrains\LevelTwo\Blog\Repositories\AuthTokensRepository\AuthTokensRepositoryInterface;
+use GeekBrains\LevelTwo\Blog\Repositories\AuthTokensRepository\SqliteAuthTokensRepository;
 use GeekBrains\LevelTwo\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\SqliteUserRepository;
 use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\Repositories\LikesRepository\LikesRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\Repositories\LikesRepository\SqliteLikesRepository;
+use GeekBrains\LevelTwo\HTTP\Auth\AuthenticationInterface;
+use GeekBrains\LevelTwo\HTTP\Auth\BearerTokenAuthentication;
 use GeekBrains\LevelTwo\HTTP\Auth\IdentificationInterface;
 use GeekBrains\LevelTwo\HTTP\Auth\JsonBodyUsernameIdentification;
+use GeekBrains\LevelTwo\HTTP\Auth\PasswordAuthentication;
+use GeekBrains\LevelTwo\HTTP\Auth\PasswordAuthenticationInterface;
+use GeekBrains\LevelTwo\HTTP\Auth\TokenAuthenticationInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Dotenv\Dotenv;
 
-require_once __DIR__ . 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 Dotenv::createImmutable(__DIR__)->safeLoad();
 
 $container = new DIContainer();
 
-$constainer->bind(
+$container->bind(
   PDO::class,
   new PDO('sqlite:' . __DIR__ . '/' . $_ENV['SQLITE_DB_PATH'])
 );
@@ -45,6 +52,26 @@ if ('yes' === $_ENV['LOG_TO_CONSOLE']) {
 }
 
 $container->bind(
+  TokenAuthenticationInterface::class,
+  BearerTokenAuthentication::class
+);
+
+
+$container->bind(
+  PasswordAuthenticationInterface::class,
+  PasswordAuthentication::class
+);
+$container->bind(
+  AuthTokensRepositoryInterface::class,
+  SqliteAuthTokensRepository::class
+);
+
+$container->bind(
+  AuthenticationInterface::class,
+  PasswordAuthentication::class
+);
+
+$container->bind(
   IdentificationInterface::class,
   JsonBodyUsernameIdentification::class
 );
@@ -67,7 +94,7 @@ $container->bind(
 
 $container->bind(
   UsersRepositoryInterface::class,
-  SqliteUsersRepository::class
+  SqliteUserRepository::class
 );
 
 return $container;

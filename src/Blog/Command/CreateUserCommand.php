@@ -8,13 +8,14 @@ use GeekBrains\LevelTwo\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\User;
-use GeekBrains\LevelTwo\Blog\UUID;
 use GeekBrains\LevelTwo\Person\Name;
+use Psr\Log\LoggerInterface;
 
 class CreateUserCommand
 {
     public function __construct(
-        private UsersRepositoryInterface $usersRepository
+        private UsersRepositoryInterface $usersRepository,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -24,20 +25,27 @@ class CreateUserCommand
      */
     public function handle(Arguments $arguments): void
     {
+        $this->logger->info("Create user command started");
+
         $username = $arguments->get('username');
 
         if ($this->userExists($username)) {
+            $this->logger->warning("User already exists: $username");
             throw new CommandException("User already exists: $username");
         }
 
-        $this->usersRepository->save(new User(
-            UUID::random(),
+        $user = User::createFrom(
+            $username,
+            $arguments->get('password'),
             new Name(
                 $arguments->get('first_name'),
                 $arguments->get('last_name')
-            ),
-            $username,
-        ));
+            )
+        );
+
+        $this->usersRepository->save($user);
+
+        $this->logger->info("User created: " . $user->uuid());
     }
 
     private function userExists(string $username): bool
