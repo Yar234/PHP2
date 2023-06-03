@@ -3,6 +3,7 @@
 use GeekBrains\LevelTwo\HTTP\Likes\CreatePostLike;
 use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
 use GeekBrains\LevelTwo\HTTP\Actions\Auth\LogIn;
+use GeekBrains\LevelTwo\HTTP\Actions\Auth\LogOut;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\CreateUser;
 use GeekBrains\LevelTwo\Http\Actions\Posts\CreatePost;
 use GeekBrains\LevelTwo\HTTP\Actions\Users\FindByUsername;
@@ -45,6 +46,7 @@ $routes = [
     ],
     'POST' => [
         '/login' => LogIn::class,
+        '/logout' => LogOut::class,
         '/users/create' => CreateUser::class,
         '/posts/create' => CreatePost::class,
         '/post-likes/create' => CreatePostLike::class
